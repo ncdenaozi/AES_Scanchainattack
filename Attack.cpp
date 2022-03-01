@@ -47,6 +47,7 @@ void Attack::FirstRoundOut(unsigned char * plaintext, unsigned char * key){
 
 void Attack::ScanChainOut(){
     //implementation
+    RandomizedResult=RoundOneResult;
 }
 
 void Attack::DetermineScanChainStructure(){

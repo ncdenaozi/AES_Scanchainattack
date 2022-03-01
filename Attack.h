@@ -7,6 +7,7 @@ using namespace std;
 class Attack : public AES {
     public:
         vector<unsigned char> RoundOneResult;
+        vector<unsigned char> RandomizedResult;
 
         Attack(AESKeyLength): AES(AESKeyLength::AES_128){
         };
