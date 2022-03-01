@@ -1,8 +1,51 @@
 #include "Attack.h"
 
-using namespace std;
+void Attack::FirstRoundOut(unsigned char * plaintext, unsigned char * key){
+    //implementation
+    unsigned char *out = new unsigned char[16];
+    unsigned char *roundKeys = new unsigned char[4 * Nb * (Nr + 1)];
+    KeyExpansion(key, roundKeys);
+    EncryptBlock(plaintext, out, roundKeys);
 
-string Attack::ScanChainOut(){
+    unsigned char **state = new unsigned char *[4];
+    state[0] = new unsigned char[4 * Nb];
+    int i, j;
+    for (i = 0; i < 4; i++)
+        state[i] = state[0] + Nb * i;
+
+    for (i = 0; i < 4; i++)
+        for (j = 0; j < Nb; j++)
+            state[i][j] = plaintext[i + 4 * j];
+
+    //pre round
+    AddRoundKey(state, roundKeys);
+    //round 1
+    SubBytes(state);
+    ShiftRows(state);
+    MixColumns(state);
+    AddRoundKey(state, roundKeys + 1 * 4 * Nb);
+
+    /*
+    for (j = 0; j < Nb; j++)
+      for (i = 0; i < 4; i++)
+        std::cout<<std::hex<<(int)state[i][j];
+    std::cout<<std::endl;
+    */
+
+    for (i = 0; i < 4; i++)
+        for (j = 0; j < Nb; j++)
+      out[i + 4 * j] = state[i][j];
+
+    delete[] state[0];
+    delete[] state;
+
+    vector<unsigned char> v = ArrayToVector(out, 16);
+    RoundOneResult=v;
+
+    delete[] roundKeys;
+}
+
+void Attack::ScanChainOut(){
     //implementation
 }
 
@@ -16,20 +59,9 @@ void Attack::RecoverRoundKey(){
 
 void Attack::PrintResult(){
     //implementation
-} 
-
-int main(){
-    vector<unsigned char> plain = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff }; //plaintext example
-    //vector<unsigned char> key = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f }; //key example
-    vector<unsigned char> key ={0x2b,0x7e,0x15,0x16,0x28,0xae,0xd2,0xa6,0xab,0xf7,0x15,0x88,0x09,0xcf,0x4f,0x3c};
-    //vector<unsigned char> key ={0x3c,0x4f,0xcf,0x09,0x88,0x15,0xf7,0xab,0xa6,0xd2,0xae,0x28,0x16,0x15,0x7e,0x2b};
-    
-    Attack attk(AESKeyLength::AES_128);
-    vector<unsigned char> d =attk.EncryptECB(plain, key);
-
-    for(auto i:d)
+    cout<<"0x";
+    for(auto i:RoundOneResult)
         cout<<hex<<(int)i;
     cout<<endl;
+} 
 
-    return 1;
-}

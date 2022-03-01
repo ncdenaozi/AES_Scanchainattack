@@ -159,6 +159,12 @@ void AES::EncryptBlock(unsigned char in[], unsigned char out[],
   AddRoundKey(state, roundKeys);
 
   for (round = 1; round <= Nr - 1; round++) {
+    /*
+    for (j = 0; j < Nb; j++)
+      for (i = 0; i < 4; i++)
+        std::cout<<std::hex<<(int)state[i][j];
+    std::cout<<std::endl;
+    */
     SubBytes(state);
     ShiftRows(state);
     MixColumns(state);
