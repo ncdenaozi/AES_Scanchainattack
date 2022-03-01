@@ -2,7 +2,7 @@
 
 Compile
  ```
- g++ AES.cpp Attack.cpp
+ g++ AES.cpp Attack.cpp Main.cpp
  ```
  
  Run
