@@ -8,7 +8,8 @@ int main(){
 
     Attack attk(AESKeyLength::AES_128,key);
 
-    attk.DetermineScanChainStructure();
+    //attk.DetermineScanChainStructure();
+    attk.RecoverRoundKey();
 
     return 1;
 }

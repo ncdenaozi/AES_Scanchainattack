@@ -64,7 +64,6 @@ void Attack::DetermineScanChainStructure(){
         ALLZERO[x]=0;
     ScanChainOut(ALLZERO);
     bitset<128> pivot=RandomizedResult;
-    cout<<pivot<<endl;
     
     for(int i=0;i<128;i++){
         unsigned char input[16];
@@ -77,17 +76,74 @@ void Attack::DetermineScanChainStructure(){
         
         input[byte_number]=1<<bit_index;
 
-        FirstRoundOut(input);
-        //ScanChainOut();
-        //bitset<128> temp=vec_to_Bitset(RandomizedResult);
+        ScanChainOut(input);
+        bitset<128> current_input=RandomizedResult;
+        bitset<128> difference=current_input^pivot;
+
+        cout<<difference<<endl;
 
         //FFtable[i]=FF1;
     }
 
 }
 
-void Attack::RecoverRoundKey(){
-    //implementation
+vector<unsigned char>  Attack::RecoverRoundKey(){
+    vector<unsigned char> roundkey(16,0);
+
+    for(int byte_count=0;byte_count<16;byte_count++){
+        bool this_byte_find=false;
+        for(uint8_t a_one=0;;a_one=a_one+2){
+            if(!this_byte_find){
+                unsigned char input[16];
+                for(int x=0;x<16;x++)
+                    input[x]=0;
+                input[byte_count]=a_one;
+                ScanChainOut(input);
+                bitset<128> First_FF=RandomizedResult;
+
+                unsigned char another_input[16];
+                for(int x=0;x<16;x++)
+                    another_input[x]=0;
+                another_input[byte_count]=a_one+1;
+                ScanChainOut(another_input);
+                bitset<128> Second_FF=RandomizedResult;
+            
+                bitset<128> xor_result=First_FF ^ Second_FF;
+                int number_of_ones=count_ones_in_bitset(xor_result);
+
+                switch (number_of_ones){
+                    case 9:{
+                        cout<<(a_one^226)<<endl;
+                        cout<<((a_one+1)^226)<<endl;
+                        this_byte_find=true;
+                    }
+                    break;
+                    case 12:{
+                        cout<<(a_one^242)<<endl;
+                        cout<<((a_one+1)^242)<<endl;
+                        this_byte_find=true;
+                    }
+                    break;
+                    case 23:{
+                        cout<<(a_one^122)<<endl;
+                        cout<<((a_one+1)^122)<<endl;
+                        this_byte_find=true;
+                    }
+                    break;
+                    case 24:{
+                        cout<<(a_one^130)<<endl;
+                        cout<<((a_one+1)^130)<<endl;
+                        this_byte_find=true;
+                    }
+                    break;            
+                    default:break;
+                }
+            }else
+                break;
+        }
+    }
+
+    return roundkey;
 }
 
 void Attack::PrintResult(){
@@ -106,6 +162,15 @@ bitset<128> Attack::vec_to_Bitset(vector<unsigned char> input){
     for(int i=15;i>0;i--)
         result|=(bitset<128>(input[i]))<<(8*(15-i));
 
+    return result;
+}
+
+int Attack::count_ones_in_bitset(bitset<128> input){
+    int result=0;
+    for(int i=0;i<128;i++){
+        if(input[i]==true)
+            result++;
+    }
     return result;
 }
 

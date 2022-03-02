@@ -2,16 +2,11 @@
 #define _ATTACK_H_
 #include "AES.h"
 #include <bitset>
+#include <utility>
 #include <unordered_map>
+#include <sstream>
 
 using namespace std;
-
-enum FlipFlops{
-    FF1,
-    FF2,
-    FF3,
-    FF4
-};
 
 class Attack : public AES {
     public:
@@ -20,8 +15,8 @@ class Attack : public AES {
         bitset<128> RandomizedResult;
         //Key
         unsigned char* key;
-        //Hashtable bit-index -> Flip Flops index
-        unordered_map<int,FlipFlops> FFtable; 
+        //Hashtable bit-index -> first bit 1 and last bit 1 after xor
+        unordered_map<int,pair<int,int>> FFtable; 
 
         Attack(AESKeyLength, unsigned char * input): AES(AESKeyLength::AES_128){
             RandomizedResult=0;
@@ -38,12 +33,14 @@ class Attack : public AES {
         void DetermineScanChainStructure();
 
         //Step 2: Recover Roundkey
-        void RecoverRoundKey();
+        vector<unsigned char> RecoverRoundKey();
 
         //Output everything here
         void PrintResult();
 
-        bitset<128> vec_to_Bitset(vector<unsigned char>);  
+        bitset<128> vec_to_Bitset(vector<unsigned char>);
+
+        int count_ones_in_bitset(bitset<128>);  
 };
 
 #endif
