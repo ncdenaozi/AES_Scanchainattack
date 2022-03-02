@@ -1,9 +1,6 @@
 #include "Attack.h"
-#include <stdlib.h>
-#include <time.h>
 
 void Attack::FirstRoundOut(unsigned char * plaintext){
-    //implementation
     unsigned char *out = new unsigned char[16];
     unsigned char *roundKeys = new unsigned char[4 * Nb * (Nr + 1)];
     KeyExpansion(key, roundKeys);
@@ -47,20 +44,11 @@ void Attack::FirstRoundOut(unsigned char * plaintext){
     delete[] roundKeys;
 }
 
-void Attack::ScanChainOut(unsigned char a[], int size){
-    //implementation
-    int i, j; 
-    unsigned char tmp;
-    srand(time(NULL)); 
-    for (i = 0; i < size; i++) 
-    { 
-        j = rand() % size; 
-        tmp = a[i]; 
-    	a[i] = a[j]; 
-        a[j] = tmp;
-    } 
-	
-    //RandomizedResult=RoundOneResult;
+void Attack::ScanChainOut(unsigned char * plaintext){
+    FirstRoundOut(plaintext);
+    bitset<128> plain=vec_to_Bitset(RoundOneResult);
+    for(int i=0;i<128;i++)
+        RandomizedResult[127-i]=plain[i];
 }
 
 void Attack::DetermineScanChainStructure(){
@@ -74,9 +62,9 @@ void Attack::DetermineScanChainStructure(){
     unsigned char ALLZERO[16];
     for(int x=0;x<16;x++)
         ALLZERO[x]=0;
-    FirstRoundOut(ALLZERO);
-    ScanChainOut();
-    bitset<128> pivot=vec_to_Bitset(RandomizedResult);
+    ScanChainOut(ALLZERO);
+    bitset<128> pivot=RandomizedResult;
+    cout<<pivot<<endl;
     
     for(int i=0;i<128;i++){
         unsigned char input[16];
@@ -90,8 +78,8 @@ void Attack::DetermineScanChainStructure(){
         input[byte_number]=1<<bit_index;
 
         FirstRoundOut(input);
-        ScanChainOut();
-        bitset<128> temp=vec_to_Bitset(RandomizedResult);
+        //ScanChainOut();
+        //bitset<128> temp=vec_to_Bitset(RandomizedResult);
 
         //FFtable[i]=FF1;
     }

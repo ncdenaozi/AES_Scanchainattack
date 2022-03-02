@@ -8,10 +8,7 @@ int main(){
 
     Attack attk(AESKeyLength::AES_128,key);
 
-    attk.FirstRoundOut(plain);
-
-    bitset<128> temp=attk.vec_to_Bitset(attk.ArrayToVector(plain,16));
-    cout<<temp<<endl;
+    attk.DetermineScanChainStructure();
 
     return 1;
 }

@@ -16,13 +16,15 @@ enum FlipFlops{
 class Attack : public AES {
     public:
         vector<unsigned char> RoundOneResult;
-        vector<unsigned char> RandomizedResult;
+
+        bitset<128> RandomizedResult;
         //Key
         unsigned char* key;
         //Hashtable bit-index -> Flip Flops index
         unordered_map<int,FlipFlops> FFtable; 
 
         Attack(AESKeyLength, unsigned char * input): AES(AESKeyLength::AES_128){
+            RandomizedResult=0;
             key=input;
         };
         //Run the only pre-round + round1, store the result in RoundOneResult
@@ -30,7 +32,7 @@ class Attack : public AES {
         
         /*Act like Hardware scan chain that output random-bit ordered
         128-bits round result*/
-        void ScanChainOut(unsigned char a[], int n);
+        void ScanChainOut(unsigned char * plaintext);
 
         //Step 1: determine 4 32-bits FF position
         void DetermineScanChainStructure();
