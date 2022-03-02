@@ -1,6 +1,6 @@
 #include "Attack.h"
 
-void Attack::FirstRoundOut(unsigned char * plaintext, unsigned char * key){
+void Attack::FirstRoundOut(unsigned char * plaintext){
     //implementation
     unsigned char *out = new unsigned char[16];
     unsigned char *roundKeys = new unsigned char[4 * Nb * (Nr + 1)];
@@ -52,6 +52,37 @@ void Attack::ScanChainOut(){
 
 void Attack::DetermineScanChainStructure(){
     //implementation
+    /*
+    0000 0000 BASE
+    0000 0001 1<<1
+    .... ....
+    1000 0000 1<<7
+    */
+    unsigned char ALLZERO[16];
+    for(int x=0;x<16;x++)
+        ALLZERO[x]=0;
+    FirstRoundOut(ALLZERO);
+    ScanChainOut();
+    bitset<128> pivot=vec_to_Bitset(RandomizedResult);
+    
+    for(int i=0;i<128;i++){
+        unsigned char input[16];
+        //initialize
+        for(int x=0;x<16;x++)
+            input[x]=0;
+        //generate bit-different input
+        int byte_number=i/8;
+        int bit_index=i%8;  //MSB 127 --- 0 LSB
+        
+        input[byte_number]=1<<bit_index;
+
+        FirstRoundOut(input);
+        ScanChainOut();
+        bitset<128> temp=vec_to_Bitset(RandomizedResult);
+
+        //FFtable[i]=FF1;
+    }
+
 }
 
 void Attack::RecoverRoundKey(){
@@ -64,5 +95,16 @@ void Attack::PrintResult(){
     for(auto i:RoundOneResult)
         cout<<hex<<(int)i;
     cout<<endl;
-} 
+}
+
+bitset<128> Attack::vec_to_Bitset(vector<unsigned char> input){
+    if(input.size()!=16)
+        throw std::length_error("Not enough byte, should be 16 bytes");
+
+    bitset<128> result;
+    for(int i=15;i>0;i--)
+        result|=(bitset<128>(input[i]))<<(8*(15-i));
+
+    return result;
+}
 
