@@ -30,7 +30,7 @@ class Attack : public AES {
         
         /*Act like Hardware scan chain that output random-bit ordered
         128-bits round result*/
-        void ScanChainOut();
+        void ScanChainOut(unsigned char a[], int n);
 
         //Step 1: determine 4 32-bits FF position
         void DetermineScanChainStructure();

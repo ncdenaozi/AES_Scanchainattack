@@ -1,4 +1,6 @@
 #include "Attack.h"
+#include <stdlib.h>
+#include <time.h>
 
 void Attack::FirstRoundOut(unsigned char * plaintext){
     //implementation
@@ -41,13 +43,24 @@ void Attack::FirstRoundOut(unsigned char * plaintext){
 
     vector<unsigned char> v = ArrayToVector(out, 16);
     RoundOneResult=v;
-
+	//cout<<sizeof(v)<<endl;
     delete[] roundKeys;
 }
 
-void Attack::ScanChainOut(){
+void Attack::ScanChainOut(unsigned char a[], int size){
     //implementation
-    RandomizedResult=RoundOneResult;
+    int i, j; 
+    unsigned char tmp;
+    srand(time(NULL)); 
+    for (i = 0; i < size; i++) 
+    { 
+        j = rand() % size; 
+        tmp = a[i]; 
+    	a[i] = a[j]; 
+        a[j] = tmp;
+    } 
+	
+    //RandomizedResult=RoundOneResult;
 }
 
 void Attack::DetermineScanChainStructure(){

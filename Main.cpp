@@ -9,7 +9,6 @@ int main(){
     Attack attk(AESKeyLength::AES_128,key);
 
     attk.FirstRoundOut(plain);
-    attk.PrintResult();
 
     bitset<128> temp=attk.vec_to_Bitset(attk.ArrayToVector(plain,16));
     cout<<temp<<endl;
