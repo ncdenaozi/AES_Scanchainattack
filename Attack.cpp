@@ -63,6 +63,7 @@ void Attack::DetermineScanChainStructure(){
     for(int x=0;x<16;x++)
         ALLZERO[x]=0;
     ScanChainOut(ALLZERO);
+    //ALLZERO_ScanChainOut=RandomizedResult;
     bitset<128> pivot=RandomizedResult;
     
     for(int i=0;i<128;i++){
@@ -88,6 +89,7 @@ void Attack::DetermineScanChainStructure(){
 }
 
 vector<unsigned char>  Attack::RecoverRoundKey(){
+
     vector<unsigned char> roundkey(16,0);
     
     vector<vector<unsigned char>> alloptions;
@@ -155,13 +157,16 @@ vector<unsigned char>  Attack::RecoverRoundKey(){
         }
         alloptions.push_back(this_byte_option);
     }
-    
+    /*
     for(int index=0;index<alloptions.size();index++){
         cout<<"Bit location "<<index<<" --";
         for(auto j:alloptions[index])
             cout<<hex<<(int)j<<"--";
         cout<<endl;
     }
+    */
+
+    roundkey=assemble_key(alloptions);
     
     return roundkey;
 }
@@ -207,3 +212,40 @@ int Attack::count_ones_in_bitset(bitset<128> input){
     return result;
 }
 
+vector<unsigned char> Attack::assemble_key(vector<vector<unsigned char>> all_option){
+    for(int index=0;index<all_option.size();index++){
+        cout<<"Bit location "<<index<<" --";
+        for(auto j:all_option[index])
+            cout<<(int)j<<"--";
+        cout<<endl;
+    }
+
+    //store allzero scanchain in ALLZERO_ScanChainOut
+    unsigned char ALLZERO[16];
+    for(int x=0;x<16;x++)
+        ALLZERO[x]=0;
+    ScanChainOut(ALLZERO);
+    bitset<128> ALLZERO_ScanChainOut=RandomizedResult;
+    bitset<128> ALLZERO_FirstRoundOut=vec_to_Bitset(RoundOneResult);
+    
+    vector<unsigned char> final_key(16);
+    long mask=0;
+    while(mask<pow(2,16)){
+        unsigned char current_key[16];
+        for(int index=0;index<all_option.size();index++)
+            current_key[index]=all_option[index][(mask>>(15-index))&1];
+        
+        Attack* temp_attack=new Attack(AESKeyLength::AES_128,current_key);
+        temp_attack->ScanChainOut(ALLZERO);
+        
+        if(temp_attack->RandomizedResult==ALLZERO_ScanChainOut){
+            cout<<vec_to_Bitset(ArrayToVector(current_key,16))<<endl;
+            final_key=ArrayToVector(current_key,16);
+            break;
+        }
+        
+        mask++;
+        delete temp_attack;
+    }
+    return final_key;
+}

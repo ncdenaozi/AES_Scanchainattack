@@ -13,6 +13,7 @@ class Attack : public AES {
         vector<unsigned char> RoundOneResult;
 
         bitset<128> RandomizedResult;
+
         //Key
         unsigned char* key;
         //Hashtable bit-index -> first bit 1 and last bit 1 after xor
@@ -40,7 +41,9 @@ class Attack : public AES {
 
         bitset<128> vec_to_Bitset(vector<unsigned char>);
 
-        int count_ones_in_bitset(bitset<128>);  
+        int count_ones_in_bitset(bitset<128>);
+
+        vector<unsigned char> assemble_key(vector<vector<unsigned char>>);  
 };
 
 #endif
