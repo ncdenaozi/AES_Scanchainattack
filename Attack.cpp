@@ -89,8 +89,11 @@ void Attack::DetermineScanChainStructure(){
 
 vector<unsigned char>  Attack::RecoverRoundKey(){
     vector<unsigned char> roundkey(16,0);
-
+    
+    vector<vector<unsigned char>> alloptions;
+    
     for(int byte_count=0;byte_count<16;byte_count++){
+        vector<unsigned char> this_byte_option(2);
         bool this_byte_find=false;
         for(uint8_t a_one=0;;a_one=a_one+2){
             if(!this_byte_find){
@@ -110,39 +113,56 @@ vector<unsigned char>  Attack::RecoverRoundKey(){
             
                 bitset<128> xor_result=First_FF ^ Second_FF;
                 int number_of_ones=count_ones_in_bitset(xor_result);
-
                 switch (number_of_ones){
                     case 9:{
-                        cout<<(a_one^226)<<endl;
-                        cout<<((a_one+1)^226)<<endl;
+                        //cout<<(a_one^226)<<endl;
+                        //cout<<(a_one^227)<<endl;
+                        this_byte_option[0]=(a_one^226);
+                        this_byte_option[1]=(a_one^227);
                         this_byte_find=true;
                     }
                     break;
                     case 12:{
-                        cout<<(a_one^242)<<endl;
-                        cout<<((a_one+1)^242)<<endl;
+                        //cout<<(a_one^242)<<endl;
+                        //cout<<(a_one^243)<<endl;
+                        this_byte_option[0]=(a_one^242);
+                        this_byte_option[1]=(a_one^243);
                         this_byte_find=true;
                     }
                     break;
                     case 23:{
-                        cout<<(a_one^122)<<endl;
-                        cout<<((a_one+1)^122)<<endl;
+                        //cout<<(a_one^122)<<endl;
+                        //cout<<(a_one^123)<<endl;
+                        this_byte_option[0]=(a_one^122);
+                        this_byte_option[1]=(a_one^123);
                         this_byte_find=true;
                     }
                     break;
                     case 24:{
-                        cout<<(a_one^130)<<endl;
-                        cout<<((a_one+1)^130)<<endl;
+                        //cout<<(a_one^130)<<endl;
+                        //cout<<(a_one^131)<<endl;
+                        this_byte_option[0]=(a_one^130);
+                        this_byte_option[1]=(a_one^131);
                         this_byte_find=true;
                     }
                     break;            
                     default:break;
                 }
-            }else
+            }else{
                 break;
+            }
+                
         }
+        alloptions.push_back(this_byte_option);
     }
-
+    
+    for(int index=0;index<alloptions.size();index++){
+        cout<<"Bit location "<<index<<" --";
+        for(auto j:alloptions[index])
+            cout<<hex<<(int)j<<"--";
+        cout<<endl;
+    }
+    
     return roundkey;
 }
 
@@ -159,9 +179,22 @@ bitset<128> Attack::vec_to_Bitset(vector<unsigned char> input){
         throw std::length_error("Not enough byte, should be 16 bytes");
 
     bitset<128> result;
-    for(int i=15;i>0;i--)
-        result|=(bitset<128>(input[i]))<<(8*(15-i));
-
+    result|= bitset<128>(input[0]) <<120;
+    result|= bitset<128>(input[1]) <<112;
+    result|= bitset<128>(input[2]) <<104;
+    result|= bitset<128>(input[3]) <<96;
+    result|= bitset<128>(input[4]) <<88;
+    result|= bitset<128>(input[5]) <<80;
+    result|= bitset<128>(input[6]) <<72;
+    result|= bitset<128>(input[7]) <<64;
+    result|= bitset<128>(input[8]) <<56;
+    result|= bitset<128>(input[9]) <<48;
+    result|= bitset<128>(input[10]) <<40;
+    result|= bitset<128>(input[11]) <<32;
+    result|= bitset<128>(input[12]) <<24;
+    result|= bitset<128>(input[13]) <<16;
+    result|= bitset<128>(input[14]) <<8;
+    result|= bitset<128>(input[15]) ;
     return result;
 }
 
