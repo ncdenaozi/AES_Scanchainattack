@@ -117,32 +117,36 @@ vector<unsigned char>  Attack::RecoverRoundKey(){
                 int number_of_ones=count_ones_in_bitset(xor_result);
                 switch (number_of_ones){
                     case 9:{
-                        //cout<<(a_one^226)<<endl;
-                        //cout<<(a_one^227)<<endl;
+                        cout<<"Byte Location: "<<dec<<byte_count<<", Input Byte is "<<hex<<(int)a_one<<endl;
+                        cout<<"Input plaintext is "<<vec_to_Bitset(ArrayToVector(input,16))<<endl;
+                        cout<<"First Byte Option: "<<(a_one^226)<<", Second Byte Option: "<<(a_one^227)<<endl;
                         this_byte_option[0]=(a_one^226);
                         this_byte_option[1]=(a_one^227);
                         this_byte_find=true;
                     }
                     break;
                     case 12:{
-                        //cout<<(a_one^242)<<endl;
-                        //cout<<(a_one^243)<<endl;
+                        cout<<"Byte Location: "<<dec<<byte_count<<", Input Byte is "<<hex<<(int)a_one<<endl;
+                        cout<<"Input plaintext is "<<vec_to_Bitset(ArrayToVector(input,16))<<endl;
+                        cout<<"First Byte Option: "<<(a_one^242)<<", Second Byte Option: "<<(a_one^243)<<endl;
                         this_byte_option[0]=(a_one^242);
                         this_byte_option[1]=(a_one^243);
                         this_byte_find=true;
                     }
                     break;
                     case 23:{
-                        //cout<<(a_one^122)<<endl;
-                        //cout<<(a_one^123)<<endl;
+                        cout<<"Byte Location: "<<dec<<byte_count<<", Input Byte is "<<hex<<(int)a_one<<endl;
+                        cout<<"Input plaintext is "<<vec_to_Bitset(ArrayToVector(input,16))<<endl;
+                        cout<<"First Byte Option: "<<(a_one^122)<<", Second Byte Option: "<<(a_one^123)<<endl;
                         this_byte_option[0]=(a_one^122);
                         this_byte_option[1]=(a_one^123);
                         this_byte_find=true;
                     }
                     break;
                     case 24:{
-                        //cout<<(a_one^130)<<endl;
-                        //cout<<(a_one^131)<<endl;
+                        cout<<"Byte Location: "<<dec<<byte_count<<", Input Byte is "<<hex<<(int)a_one<<endl;
+                        cout<<"Input plaintext is "<<vec_to_Bitset(ArrayToVector(input,16))<<endl;
+                        cout<<"First Byte Option: "<<(a_one^130)<<", Second Byte Option: "<<(a_one^131)<<endl;
                         this_byte_option[0]=(a_one^130);
                         this_byte_option[1]=(a_one^131);
                         this_byte_find=true;
@@ -213,12 +217,13 @@ int Attack::count_ones_in_bitset(bitset<128> input){
 }
 
 vector<unsigned char> Attack::assemble_key(vector<vector<unsigned char>> all_option){
+    /*
     for(int index=0;index<all_option.size();index++){
         cout<<"Bit location "<<index<<" --";
         for(auto j:all_option[index])
             cout<<(int)j<<"--";
         cout<<endl;
-    }
+    }*/
 
     //store allzero scanchain in ALLZERO_ScanChainOut
     unsigned char ALLZERO[16];
@@ -239,7 +244,7 @@ vector<unsigned char> Attack::assemble_key(vector<vector<unsigned char>> all_opt
         temp_attack->ScanChainOut(ALLZERO);
         
         if(temp_attack->RandomizedResult==ALLZERO_ScanChainOut){
-            cout<<vec_to_Bitset(ArrayToVector(current_key,16))<<endl;
+            //cout<<vec_to_Bitset(ArrayToVector(current_key,16))<<endl;
             final_key=ArrayToVector(current_key,16);
             break;
         }
@@ -247,5 +252,11 @@ vector<unsigned char> Attack::assemble_key(vector<vector<unsigned char>> all_opt
         mask++;
         delete temp_attack;
     }
+
+    cout<<"Round Key Zero is: ";
+    for(auto b:final_key)
+        cout<<"0x"<<hex<<(int)b<<", ";
+    cout<<endl;
+
     return final_key;
 }
