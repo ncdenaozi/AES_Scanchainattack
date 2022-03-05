@@ -24,13 +24,6 @@ void Attack::FirstRoundOut(unsigned char * plaintext){
     MixColumns(state);
     AddRoundKey(state, roundKeys + 1 * 4 * Nb);
 
-    /*
-    for (j = 0; j < Nb; j++)
-      for (i = 0; i < 4; i++)
-        std::cout<<std::hex<<(int)state[i][j];
-    std::cout<<std::endl;
-    */
-
     for (i = 0; i < 4; i++)
         for (j = 0; j < Nb; j++)
       out[i + 4 * j] = state[i][j];
@@ -40,7 +33,6 @@ void Attack::FirstRoundOut(unsigned char * plaintext){
 
     vector<unsigned char> v = ArrayToVector(out, 16);
     RoundOneResult=v;
-	//cout<<sizeof(v)<<endl;
     delete[] roundKeys;
 }
 
@@ -52,13 +44,6 @@ void Attack::ScanChainOut(unsigned char * plaintext){
 }
 
 void Attack::DetermineScanChainStructure(){
-    //implementation
-    /*
-    0000 0000 BASE
-    0000 0001 1<<1
-    .... ....
-    1000 0000 1<<7
-    */
     unsigned char ALLZERO[16];
     for(int x=0;x<16;x++)
         ALLZERO[x]=0;
@@ -74,7 +59,7 @@ void Attack::DetermineScanChainStructure(){
         //generate bit-different input
         int byte_number=i/8;
         int bit_index=i%8;  //MSB 127 --- 0 LSB
-        
+        //set the input byte with only one 1 in certain bit_index
         input[byte_number]=1<<bit_index;
 
         ScanChainOut(input);
@@ -82,10 +67,8 @@ void Attack::DetermineScanChainStructure(){
         bitset<128> difference=current_input^pivot;
 
         cout<<difference<<endl;
-
         //FFtable[i]=FF1;
     }
-
 }
 
 vector<unsigned char>  Attack::RecoverRoundKey(){
